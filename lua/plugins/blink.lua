@@ -5,6 +5,9 @@ return {
 	},
 	version = "1.*",
 	opts = {
+		snippets = {
+			preset = "luasnip",
+		},
 		keymap = {
 			preset = "none",
 			["<Tab>"] = { "select_next", "snippet_forward", "fallback" },

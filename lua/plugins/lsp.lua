@@ -7,18 +7,22 @@ return {
 		"saghen/blink.cmp",
 	},
 	config = function()
+		-- Fidget (LSP progress)
 		require("fidget").setup({
 			notification = {
 				window = { winblend = 0 },
 			},
 		})
 
-		local capabilities = require("blink.cmp").get_lsp_capabilities()
-
+		-- Mason
 		require("mason").setup({
 			ui = { border = "rounded" },
 		})
 
+		-- Capabilities via blink
+		local capabilities = require("blink.cmp").get_lsp_capabilities()
+
+		-- Servers
 		require("mason-lspconfig").setup({
 			ensure_installed = {
 				"lua_ls",
@@ -29,11 +33,12 @@ return {
 				"intelephense",
 				"ts_ls",
 			},
-			automatic_installation = true,
 			handlers = {
+				-- Default handler
 				function(server_name)
 					require("lspconfig")[server_name].setup({ capabilities = capabilities })
 				end,
+
 				["lua_ls"] = function()
 					require("lspconfig").lua_ls.setup({
 						capabilities = capabilities,
@@ -52,6 +57,44 @@ return {
 						},
 					})
 				end,
+
+				["ts_ls"] = function()
+					require("lspconfig").ts_ls.setup({
+						capabilities = capabilities,
+						settings = {
+							typescript = {
+								inlayHints = {
+									includeInlayParameterNameHints = "all",
+									includeInlayFunctionParameterTypeHints = true,
+								},
+							},
+							javascript = {
+								inlayHints = {
+									includeInlayParameterNameHints = "all",
+									includeInlayFunctionParameterTypeHints = true,
+								},
+							},
+						},
+					})
+				end,
+
+				["gopls"] = function()
+					require("lspconfig").gopls.setup({
+						capabilities = capabilities,
+						settings = {
+							gopls = {
+								hints = {
+									assignVariableTypes = true,
+									compositeLiteralFields = true,
+									functionTypeParameters = true,
+									parameterNames = true,
+									rangeVariableTypes = true,
+								},
+							},
+						},
+					})
+				end,
+
 				["tailwindcss"] = function()
 					require("lspconfig").tailwindcss.setup({
 						capabilities = capabilities,
@@ -79,6 +122,7 @@ return {
 						},
 					})
 				end,
+
 				["intelephense"] = function()
 					require("lspconfig").intelephense.setup({
 						capabilities = capabilities,
@@ -90,25 +134,20 @@ return {
 						},
 					})
 				end,
-				["ts_ls"] = function()
-					require("lspconfig").ts_ls.setup({
-						capabilities = capabilities,
-						settings = {
-							typescript = {
-								inlayHints = {
-									includeInlayParameterNameHints = "all",
-									includeInlayFunctionParameterTypeHints = true,
-								},
-							},
-						},
-					})
-				end,
 			},
 		})
 
+		-- Diagnósticos
 		vim.diagnostic.config({
 			virtual_text = { prefix = "●", source = "if_many" },
-			signs = true,
+			signs = {
+				text = {
+					[vim.diagnostic.severity.ERROR] = " ",
+					[vim.diagnostic.severity.WARN] = " ",
+					[vim.diagnostic.severity.HINT] = " ",
+					[vim.diagnostic.severity.INFO] = " ",
+				},
+			},
 			update_in_insert = false,
 			underline = true,
 			severity_sort = true,
@@ -122,14 +161,9 @@ return {
 			},
 		})
 
-		local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
-		for type, icon in pairs(signs) do
-			local hl = "DiagnosticSign" .. type
-			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-		end
-
+		-- Keymaps (LspAttach)
 		vim.api.nvim_create_autocmd("LspAttach", {
-			group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+			group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 			callback = function(ev)
 				local buf = ev.buf
 				local map = function(mode, lhs, rhs, desc)
