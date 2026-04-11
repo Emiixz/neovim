@@ -3,44 +3,58 @@ return {
 	build = ":TSUpdate",
 	event = { "BufReadPost", "BufNewFile" },
 	dependencies = {
-		"nvim-treesitter/nvim-treesitter-textobjects", -- Textobjects úteis
+		"nvim-treesitter/nvim-treesitter-textobjects",
 	},
 	config = function()
 		require("nvim-treesitter.configs").setup({
 			ensure_installed = {
 				-- Essenciais
-				"lua", "vim", "vimdoc", "query",
+				"lua",
+				"vim",
+				"vimdoc",
+				"query",
 				-- Web
-				"javascript", "typescript", "tsx", "html", "css",
-				"json", "yaml", "markdown", "markdown_inline",
+				"javascript",
+				"typescript",
+				"tsx",
+				"html",
+				"css",
+				"json",
+				"yaml",
+				"markdown",
+				"markdown_inline",
 				-- Backend
-				"python", "php", "go", "rust", "c",
+				"python",
+				"php",
+				"go",
+				"rust",
+				"c",
+				"zig",
 				-- Outros
-				"bash", "dockerfile", "gitignore", "astro",
+				"bash",
+				"dockerfile",
+				"gitignore",
+				"astro",
 			},
-			
+
 			auto_install = true,
-			
+
 			highlight = {
 				enable = true,
-				-- Performance: desabilitar em arquivos grandes
-				disable = function(lang, buf)
-					local max_filesize = 100 * 1024 -- 100 KB
-					local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-					if ok and stats and stats.size > max_filesize then
+				disable = function(_, buf)
+					local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
+					if ok and stats and stats.size > 100 * 1024 then
 						return true
 					end
 				end,
 				additional_vim_regex_highlighting = false,
 			},
-			
-			indent = { 
+
+			indent = {
 				enable = true,
-				-- Desabilitar para Python (conflita com indent-blankline)
 				disable = { "python" },
 			},
-			
-			-- Textobjects para seleção inteligente
+
 			textobjects = {
 				select = {
 					enable = true,
