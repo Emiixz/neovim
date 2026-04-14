@@ -1,55 +1,9 @@
 return {
-	"rose-pine/neovim",
-	name = "rose-pine",
-	config = function()
-		require("rose-pine").setup({
-			variant = "auto", -- auto, main, moon, ou dawn
-			dark_variant = "moon", -- main, moon, ou dawn
-			dim_inactive_windows = false,
-			extend_background_behind_borders = true,
-
-			enable = {
-				terminal = true,
-				legacy_highlights = true,
-				migrations = true,
-			},
-
-			styles = {
-				bold = true,
-				italic = true,
-				transparency = true,
-			},
-
-			groups = {
-				border = "muted",
-				link = "iris",
-				panel = "surface",
-
-				error = "love",
-				hint = "iris",
-				info = "foam",
-				note = "pine",
-				todo = "rose",
-				warn = "gold",
-
-				git_add = "foam",
-				git_change = "rose",
-				git_delete = "love",
-				git_dirty = "rose",
-				git_ignore = "muted",
-				git_merge = "iris",
-				git_rename = "pine",
-				git_stage = "iris",
-				git_text = "rose",
-				git_untracked = "subtle",
-			},
-
-			highlight_groups = {
-				-- Exemplos de customização:
-		  -- Comment = { fg = "foam" },
-		  -- Visual = { fg = "base", bg = "text", inherit = false },
-	  },
-  })
-
-  vim.cmd("colorscheme rose-pine")  end,
+    "Kopihue/after-dark",
+    lazy = false,    -- carrega no startup (recomendado pra tema)
+    priority = 1000, -- garante que o tema vem primeiro
+    config = function()
+        vim.o.background = "dark"
+        vim.cmd.colorscheme("after-dark")
+    end,
 }
