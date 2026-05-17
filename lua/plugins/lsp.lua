@@ -17,28 +17,31 @@ return {
             ui = { border = "rounded" },
         })
 
+        local lspconfig = require("lspconfig")
         local capabilities = require("blink.cmp").get_lsp_capabilities()
+
+        local function setup(server, opts)
+            lspconfig[server].setup(vim.tbl_extend("force", { capabilities = capabilities }, opts or {}))
+        end
 
         require("mason-lspconfig").setup({
             ensure_installed = {
                 "lua_ls",
-                "basedpyright", -- ou pyright
+                "pyright",
                 "html",
                 "cssls",
                 "tailwindcss",
                 "intelephense",
-                "ts_ls",
+                "vtsls",
+                "emmet_language_server",
             },
             handlers = {
                 function(server_name)
-                    require("lspconfig")[server_name].setup({
-                        capabilities = capabilities,
-                    })
+                    setup(server_name)
                 end,
 
                 ["lua_ls"] = function()
-                    require("lspconfig").lua_ls.setup({
-                        capabilities = capabilities,
+                    setup("lua_ls", {
                         settings = {
                             Lua = {
                                 runtime = { version = "LuaJIT" },
@@ -55,42 +58,64 @@ return {
                     })
                 end,
 
-                ["basedpyright"] = function()
-                    require("lspconfig").basedpyright.setup({
-                        capabilities = capabilities,
+                ["pyright"] = function()
+                    setup("pyright", {
                         settings = {
-                            basedpyright = {
+                            python = {
                                 analysis = {
                                     typeCheckingMode = "basic",
                                     autoImportCompletions = true,
+                                    autoSearchPaths = true,
+                                    useLibraryCodeForTypes = true,
                                 },
                             },
                         },
                     })
                 end,
 
-                ["ts_ls"] = function()
-                    require("lspconfig").ts_ls.setup({
-                        capabilities = capabilities,
+                ["html"] = function()
+                    setup("html", {
+                        filetypes = { "html", "templ" },
+                        init_options = {
+                            provideFormatter = true,
+                            embeddedLanguages = { css = true, javascript = true },
+                            configurationSection = { "html", "css", "javascript" },
+                        },
+                    })
+                end,
+
+                ["cssls"] = function()
+                    setup("cssls", {
+                        settings = {
+                            css  = { validate = true, lint = { unknownAtRules = "ignore" } },
+                            scss = { validate = true, lint = { unknownAtRules = "ignore" } },
+                            less = { validate = true, lint = { unknownAtRules = "ignore" } },
+                        },
+                    })
+                end,
+
+                ["vtsls"] = function()
+                    setup("vtsls", {
+                        filetypes = {
+                            "javascript", "javascriptreact",
+                            "typescript", "typescriptreact",
+                            "html",
+                        },
                         settings = {
                             typescript = {
                                 suggest = { completeFunctionCalls = true },
                                 inlayHints = {
-                                    includeInlayParameterNameHints = "all",
-                                    includeInlayFunctionParameterTypeHints = true,
-                                    includeInlayVariableTypeHints = true,
-                                    includeInlayPropertyDeclarationTypeHints = true,
-                                    includeInlayFunctionLikeReturnTypeHints = true,
+                                    parameterNames = { enabled = "all" },
+                                    functionLikeReturnTypes = { enabled = true },
+                                    variableTypes = { enabled = true },
                                 },
                             },
                             javascript = {
                                 suggest = { completeFunctionCalls = true },
                                 inlayHints = {
-                                    includeInlayParameterNameHints = "all",
-                                    includeInlayFunctionParameterTypeHints = true,
-                                    includeInlayVariableTypeHints = true,
-                                    includeInlayPropertyDeclarationTypeHints = true,
-                                    includeInlayFunctionLikeReturnTypeHints = true,
+                                    parameterNames = { enabled = "all" },
+                                    functionLikeReturnTypes = { enabled = true },
+                                    variableTypes = { enabled = true },
                                 },
                             },
                         },
@@ -98,19 +123,12 @@ return {
                 end,
 
                 ["tailwindcss"] = function()
-                    require("lspconfig").tailwindcss.setup({
-                        capabilities = capabilities,
+                    setup("tailwindcss", {
                         filetypes = {
-                            "html",
-                            "css",
-                            "scss",
-                            "javascript",
-                            "javascriptreact",
-                            "typescript",
-                            "typescriptreact",
-                            "vue",
-                            "svelte",
-                            "astro",
+                            "html", "css", "scss",
+                            "javascript", "javascriptreact",
+                            "typescript", "typescriptreact",
+                            "vue", "svelte", "astro",
                         },
                         settings = {
                             tailwindCSS = {
@@ -125,9 +143,14 @@ return {
                     })
                 end,
 
+                ["emmet_language_server"] = function()
+                    setup("emmet_language_server", {
+                        filetypes = { "html", "css", "scss", "sass", "javascriptreact", "typescriptreact" },
+                    })
+                end,
+
                 ["intelephense"] = function()
-                    require("lspconfig").intelephense.setup({
-                        capabilities = capabilities,
+                    setup("intelephense", {
                         settings = {
                             intelephense = {
                                 files = { maxSize = 1000000 },

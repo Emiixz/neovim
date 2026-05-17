@@ -23,7 +23,7 @@ return {
                 auto_show = false,
                 window = { border = "rounded" },
             },
-            ghost_text = { enabled = true },
+            ghost_text = { enabled = false },
             list = {
                 selection = {
                     preselect = true,

@@ -3,6 +3,7 @@ local set = vim.opt
 --line nums
 set.relativenumber = true
 set.number = true
+vim.opt.foldenable = false
 
 -- indentation and tabs
 set.tabstop = 4

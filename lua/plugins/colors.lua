@@ -1,9 +1,18 @@
 return {
-    "Kopihue/after-dark",
-    lazy = false,    -- carrega no startup (recomendado pra tema)
-    priority = 1000, -- garante que o tema vem primeiro
+    "rose-pine/neovim",
+    name = "rose-pine",
+    lazy = false,    -- carrega na inicialização
+    priority = 1000, -- garante que carrega antes de outros plugins
     config = function()
-        vim.o.background = "dark"
-        vim.cmd.colorscheme("after-dark")
+        require("rose-pine").setup({
+            variant = "moon", -- força o tema moon
+            dark_variant = "moon",
+            styles = {
+                bold = true,
+                italic = true,
+                transparency = true,
+            },
+        })
+        vim.cmd("colorscheme rose-pine-moon")
     end,
 }
